@@ -1,0 +1,25 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  assignees:
+  - robsdedude
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: daily
+  assignees:
+  - robsdedude
+- package-ecosystem: "docker"
+  directory: "/cinegraph-ai"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 5
+- package-ecosystem: "pip"
+  directory: "/cinegraph-ai"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 5
