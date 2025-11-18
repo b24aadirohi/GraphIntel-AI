@@ -1,0 +1,17 @@
+.venv/
+.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.sqlite3
+staticfiles/
+dist/
+*.egg-info/
+
+.env.kubernetes
+!.env.example
+!.env.integration
+backups/
+.local-admin.json
+.production-check.env

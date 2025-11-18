@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cinegraph-ai"
+version = "1.0.0"
+description = "Data analytics, Neo4j graph intelligence, NLP and conversational RAG across Python, Django, Flask and FastAPI"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "django>=5.2,<5.3", "flask>=3.1,<4", "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1", "gunicorn>=23,<24", "whitenoise>=6.9,<7",
+  "neo4j>=5.28,<7", "psycopg[binary]>=3.2,<4", "dj-database-url>=2.3,<4",
+  "httpx>=0.28,<1", "requests>=2.32,<3", "scikit-learn>=1.6,<2",
+  "mcp>=1.20,<2", "python-dotenv>=1,<2", "redis>=5.2,<7",
+  "prometheus-client>=0.21,<1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<10", "pytest-django>=4.10,<5", "pytest-asyncio>=0.25,<2", "ruff>=0.11,<1", "pip-audit>=2.9,<3", "fakeredis[lua]>=2.28,<3"]
+
+[project.scripts]
+cinegraph-mcp = "cinegraph.mcp_server.server:main"
+cinegraph-evaluate = "cinegraph.shared.evaluate:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cinegraph"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "cinegraph.catalog.settings"
+testpaths = ["tests"]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+markers = ["integration: requires running Neo4j and PostgreSQL"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

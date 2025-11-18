@@ -1,0 +1,13 @@
+.venv
+.env*
+.local-admin.json
+backups
+.git
+.pytest_cache
+.ruff_cache
+__pycache__
+*.sqlite3
+staticfiles
+tests
+docs
+deploy

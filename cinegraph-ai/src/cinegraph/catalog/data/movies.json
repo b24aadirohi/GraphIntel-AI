@@ -1,0 +1,406 @@
+[
+  {
+    "id": "movie-001",
+    "title": "Signal Beyond Europa",
+    "released": 2021,
+    "summary": "A radio engineer on an icy moon receives a transmission in her own voice. With a cautious navigator, she follows the signal through abandoned research stations and discovers a message delayed by an experimental gravity relay.",
+    "genres": [
+      "Science Fiction",
+      "Mystery"
+    ],
+    "cast": [
+      "Mira Vale",
+      "Jon Bell"
+    ],
+    "directors": [
+      "Ada North"
+    ]
+  },
+  {
+    "id": "movie-002",
+    "title": "The Last Orchard",
+    "released": 2019,
+    "summary": "A young botanist returns to her drought-stricken hometown to help her father save a community orchard. Their disagreements over water and inheritance lead them to restore an old cooperative irrigation system.",
+    "genres": [
+      "Drama"
+    ],
+    "cast": [
+      "Nora Reed",
+      "Eli Stone"
+    ],
+    "directors": [
+      "Lea Marsh"
+    ]
+  },
+  {
+    "id": "movie-003",
+    "title": "Midnight Platform",
+    "released": 2020,
+    "summary": "A station cleaner finds a suitcase containing photographs of journeys that have not happened yet. As the last train approaches, she traces the photographs to a missing railway archivist.",
+    "genres": [
+      "Mystery",
+      "Thriller"
+    ],
+    "cast": [
+      "Mira Vale",
+      "Theo Pike"
+    ],
+    "directors": [
+      "Ada North"
+    ]
+  },
+  {
+    "id": "movie-004",
+    "title": "Paper Constellations",
+    "released": 2022,
+    "summary": "Two strangers exchange handmade star maps through a neighborhood library. Their drawings chart a friendship across the city while each learns to describe a grief they have kept private.",
+    "genres": [
+      "Romance",
+      "Drama"
+    ],
+    "cast": [
+      "Nora Reed",
+      "Sam Rivers"
+    ],
+    "directors": [
+      "Lea Marsh"
+    ]
+  },
+  {
+    "id": "movie-005",
+    "title": "Borrowed Orbit",
+    "released": 2023,
+    "summary": "An orbital salvage crew borrows an obsolete rescue ship to retrieve stranded scientists. Limited fuel forces the crew to navigate by a network of forgotten weather satellites.",
+    "genres": [
+      "Science Fiction",
+      "Adventure"
+    ],
+    "cast": [
+      "Jon Bell",
+      "Zara Moss"
+    ],
+    "directors": [
+      "Ada North"
+    ]
+  },
+  {
+    "id": "movie-006",
+    "title": "The Clockmaker’s Ferry",
+    "released": 2018,
+    "summary": "A clockmaker repairs a ferry that crosses a river only during a missing minute. Each crossing reveals a different unfinished promise from the passengers’ past.",
+    "genres": [
+      "Fantasy",
+      "Adventure"
+    ],
+    "cast": [
+      "Eli Stone",
+      "Lina Hart"
+    ],
+    "directors": [
+      "Omar West"
+    ]
+  },
+  {
+    "id": "movie-007",
+    "title": "Quiet Frequencies",
+    "released": 2024,
+    "summary": "A hearing-impaired sound designer and a street drummer create a performance using vibrations and projected light. Their small workshop becomes a gathering place for musicians excluded from conventional venues.",
+    "genres": [
+      "Drama",
+      "Music"
+    ],
+    "cast": [
+      "Sam Rivers",
+      "Zara Moss"
+    ],
+    "directors": [
+      "Lea Marsh"
+    ]
+  },
+  {
+    "id": "movie-008",
+    "title": "Saltwater Ledger",
+    "released": 2020,
+    "summary": "A harbor accountant notices impossible entries in the fish auction ledger. Working with a skeptical boat mechanic, she uncovers a scheme involving missing catches and a shuttered cold-storage warehouse.",
+    "genres": [
+      "Crime",
+      "Mystery"
+    ],
+    "cast": [
+      "Theo Pike",
+      "Nora Reed"
+    ],
+    "directors": [
+      "Kai Frost"
+    ]
+  },
+  {
+    "id": "movie-009",
+    "title": "Maps for Tomorrow",
+    "released": 2021,
+    "summary": "A retired cartographer guides a teenage courier through a mountain pass after a landslide cuts off their valley. Together they mark safer trails for villages absent from official maps.",
+    "genres": [
+      "Adventure",
+      "Drama"
+    ],
+    "cast": [
+      "Lina Hart",
+      "Jon Bell"
+    ],
+    "directors": [
+      "Omar West"
+    ]
+  },
+  {
+    "id": "movie-010",
+    "title": "Dinner at Number Nine",
+    "released": 2019,
+    "summary": "Nine tenants accidentally book the same shared kitchen for a holiday dinner. A broken elevator and competing family recipes turn their disagreement into an improvised rooftop feast.",
+    "genres": [
+      "Comedy"
+    ],
+    "cast": [
+      "Eli Stone",
+      "Sam Rivers"
+    ],
+    "directors": [
+      "Bea Finch"
+    ]
+  },
+  {
+    "id": "movie-011",
+    "title": "Glass Horizon",
+    "released": 2022,
+    "summary": "A scientist maintaining a city-sized climate dome finds evidence that its weather forecasts are being altered. She must reveal the manipulation before a staged storm evacuates an entire district.",
+    "genres": [
+      "Science Fiction",
+      "Thriller"
+    ],
+    "cast": [
+      "Mira Vale",
+      "Zara Moss"
+    ],
+    "directors": [
+      "Kai Frost"
+    ]
+  },
+  {
+    "id": "movie-012",
+    "title": "The Lantern Courier",
+    "released": 2023,
+    "summary": "A bicycle courier carries lanterns that hold forgotten dreams across a sleeping city. When one lantern refuses delivery, she searches for its owner in a district erased from every map.",
+    "genres": [
+      "Fantasy",
+      "Adventure"
+    ],
+    "cast": [
+      "Lina Hart",
+      "Theo Pike"
+    ],
+    "directors": [
+      "Omar West"
+    ]
+  },
+  {
+    "id": "movie-013",
+    "title": "One More Rehearsal",
+    "released": 2018,
+    "summary": "A failing brass band reunites for a community theater fundraiser. Their new conductor discovers that getting the musicians to listen to one another is harder than teaching the score.",
+    "genres": [
+      "Comedy",
+      "Music"
+    ],
+    "cast": [
+      "Sam Rivers",
+      "Eli Stone"
+    ],
+    "directors": [
+      "Bea Finch"
+    ]
+  },
+  {
+    "id": "movie-014",
+    "title": "Winter Archive",
+    "released": 2024,
+    "summary": "An archivist cataloging a remote observatory finds weather diaries with pages removed on the same date each year. A former caretaker helps reconstruct the story of a long-delayed rescue.",
+    "genres": [
+      "Mystery",
+      "Drama"
+    ],
+    "cast": [
+      "Nora Reed",
+      "Mira Vale"
+    ],
+    "directors": [
+      "Ada North"
+    ]
+  },
+  {
+    "id": "movie-015",
+    "title": "Roots of the Tide",
+    "released": 2021,
+    "summary": "A marine gardener starts a seagrass restoration project beside a struggling fishing town. Local volunteers challenge her assumptions and show how their livelihood can coexist with a recovering bay.",
+    "genres": [
+      "Drama"
+    ],
+    "cast": [
+      "Zara Moss",
+      "Eli Stone"
+    ],
+    "directors": [
+      "Lea Marsh"
+    ]
+  },
+  {
+    "id": "movie-016",
+    "title": "Ten Minute Heist",
+    "released": 2020,
+    "summary": "Two delivery drivers discover that their van has been swapped with a getaway vehicle. To recover a neighbor’s wedding cake, they improvise a plan during a ten-minute traffic closure.",
+    "genres": [
+      "Crime",
+      "Comedy"
+    ],
+    "cast": [
+      "Theo Pike",
+      "Sam Rivers"
+    ],
+    "directors": [
+      "Bea Finch"
+    ]
+  },
+  {
+    "id": "movie-017",
+    "title": "Echoes of Red Dust",
+    "released": 2022,
+    "summary": "A Mars surveyor finds footprints circling an unopened supply capsule. Her investigation reveals a stranded mapping robot repeating the final route of an earlier expedition.",
+    "genres": [
+      "Science Fiction",
+      "Mystery"
+    ],
+    "cast": [
+      "Jon Bell",
+      "Mira Vale"
+    ],
+    "directors": [
+      "Ada North"
+    ]
+  },
+  {
+    "id": "movie-018",
+    "title": "The Unfinished Bridge",
+    "released": 2017,
+    "summary": "An engineer and a local historian work to complete a pedestrian bridge abandoned decades ago. Interviews with residents reveal both the reason construction stopped and a friendship worth rebuilding.",
+    "genres": [
+      "Drama",
+      "Romance"
+    ],
+    "cast": [
+      "Nora Reed",
+      "Theo Pike"
+    ],
+    "directors": [
+      "Lea Marsh"
+    ]
+  },
+  {
+    "id": "movie-019",
+    "title": "Cloud Sailors",
+    "released": 2023,
+    "summary": "Two apprentice weather keepers sail a small airship after a runaway rain cloud. Their pursuit carries them above dry villages where sharing the rain matters more than bringing it home.",
+    "genres": [
+      "Fantasy",
+      "Adventure"
+    ],
+    "cast": [
+      "Lina Hart",
+      "Zara Moss"
+    ],
+    "directors": [
+      "Omar West"
+    ]
+  },
+  {
+    "id": "movie-020",
+    "title": "After the Applause",
+    "released": 2024,
+    "summary": "A former concert pianist teaches at a rural school after losing confidence on stage. Preparing a student ensemble helps him find a musical life beyond competitions and sold-out halls.",
+    "genres": [
+      "Drama",
+      "Music"
+    ],
+    "cast": [
+      "Sam Rivers",
+      "Nora Reed"
+    ],
+    "directors": [
+      "Kai Frost"
+    ]
+  },
+  {
+    "id": "movie-021",
+    "title": "The Umbrella Election",
+    "released": 2021,
+    "summary": "A neighborhood elects a volunteer to manage its communal umbrella stand. A friendly campaign grows absurdly elaborate before a sudden downpour reminds everyone why the stand exists.",
+    "genres": [
+      "Comedy"
+    ],
+    "cast": [
+      "Eli Stone",
+      "Theo Pike"
+    ],
+    "directors": [
+      "Bea Finch"
+    ]
+  },
+  {
+    "id": "movie-022",
+    "title": "An Ocean of Static",
+    "released": 2019,
+    "summary": "Engineers aboard an undersea habitat hear familiar voices in a damaged communications channel. With oxygen running low, they separate corrupted recordings from the one signal that can guide rescuers.",
+    "genres": [
+      "Science Fiction",
+      "Thriller"
+    ],
+    "cast": [
+      "Zara Moss",
+      "Jon Bell"
+    ],
+    "directors": [
+      "Kai Frost"
+    ]
+  },
+  {
+    "id": "movie-023",
+    "title": "The Blue Suitcase",
+    "released": 2018,
+    "summary": "A museum apprentice inherits a blue suitcase containing keys to lockers in distant railway towns. Each locker reveals part of her grandmother’s unfinished journey to return a stolen painting.",
+    "genres": [
+      "Mystery",
+      "Adventure"
+    ],
+    "cast": [
+      "Lina Hart",
+      "Mira Vale"
+    ],
+    "directors": [
+      "Ada North"
+    ]
+  },
+  {
+    "id": "movie-024",
+    "title": "Summer on Cedar Street",
+    "released": 2020,
+    "summary": "A reserved bicycle mechanic and an enthusiastic mural painter share a storefront for the summer. Their rival plans for the space slowly become a joint project for the neighborhood.",
+    "genres": [
+      "Romance",
+      "Comedy"
+    ],
+    "cast": [
+      "Sam Rivers",
+      "Nora Reed"
+    ],
+    "directors": [
+      "Bea Finch"
+    ]
+  }
+]
