@@ -1,0 +1,13 @@
+{
+  "movies": [
+    {"id":"orbit","title":"Silent Orbit","released":2020,"summary":"An astronaut explores a distant planet and survives a dangerous space mission.","genres":["Science Fiction"],"cast":["Alex Stone"],"directors":["Rae Moon"]},
+    {"id":"mars","title":"Mars Rescue","released":2021,"summary":"Astronauts travel through space to rescue a stranded explorer on a distant planet.","genres":["Science Fiction"],"cast":["Alex Stone"],"directors":["Rae Moon"]},
+    {"id":"bakery","title":"The Village Bakery","released":2019,"summary":"A baker finds romance while opening a pastry shop in a small village.","genres":["Romance"],"cast":["Robin Day"],"directors":["Lee Sun"]},
+    {"id":"pastry","title":"Love and Pastry","released":2022,"summary":"A village baker falls in love and shares romantic dreams of a pastry shop.","genres":["Romance"],"cast":["Robin Day"],"directors":["Lee Sun"]}
+  ],
+  "queries": [
+    {"question":"astronaut space planet mission","relevant":["orbit","mars"]},
+    {"question":"baker romance pastry village","relevant":["bakery","pastry"]}
+  ],
+  "recommendations": [{"seed":"orbit","relevant":"mars"},{"seed":"bakery","relevant":"pastry"}]
+}
