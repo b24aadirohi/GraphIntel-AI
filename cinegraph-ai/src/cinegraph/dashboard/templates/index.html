@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="description" content="GraphIntel AI: data analytics, graph intelligence and source-grounded conversational AI using a film reference dataset.">
+  <meta name="theme-color" content="#111722">
+  <title>GraphIntel AI — Data Analytics & Conversational Intelligence</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar">
+  <a class="brand" href="#catalog"><span class="brand-mark" aria-hidden="true">G<span>I</span></span><span>GraphIntel<small>DATA & AI INTELLIGENCE</small></span></a>
+  <nav aria-label="Main navigation"><a href="#catalog">Explore data <span>↗</span></a><a href="#connections">Knowledge graph <span>↗</span></a><a href="#assistant">AI assistant <span>↗</span></a>{% if can_view_analytics %}<a href="#activity">Digital analytics <span>↗</span></a><a href="{{ catalog_url }}">Manage catalog <span>↗</span></a>{% endif %}</nav>
+  {% if auth_required %}<form action="/logout" method="post" class="logout-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit" class="secondary">Sign out</button></form>{% endif %}
+  <div class="sidebar-note"><span class="eyebrow">CONNECTED DATA</span><p>Turn connected data<br>into useful evidence.</p><span class="muted">Explore relationships,<br>recommendations and sources.</span></div>
+  <div class="edition">GRAPHINTEL AI <span>ANALYTICS / GRAPHS / GENAI</span></div>
+</aside>
+<main id="main">
+<header class="topline"><span>Sample catalog · Fictional films</span><span id="service-status" role="status">Connecting to the platform…</span></header>
+<section id="catalog" aria-labelledby="catalog-title">
+  <div class="hero"><div><p class="eyebrow">DATA ANALYTICS & CONVERSATIONAL INTELLIGENCE</p><h1 id="catalog-title">Explore connected data.<br><em>Ask better questions.</em></h1><p class="hero-copy">Explore a film reference dataset through graph relationships, explainable recommendations and answers backed by sources.</p></div><div class="reel" aria-hidden="true"><span>STORIES</span><i></i><span>PEOPLE</span><i></i><span>CONNECTIONS</span></div></div>
+  <div class="stats" aria-label="Reference dataset statistics"><div><strong id="stat-movies">—</strong><span>Film records</span></div><div><strong id="stat-people">—</strong><span>Linked people</span></div><div><strong id="stat-genres">—</strong><span>Genre categories</span></div></div>
+  <form id="search-form" class="search"><label for="search-input">Search the dataset</label><div class="input-row"><input id="search-input" name="q" type="search" maxlength="200" placeholder="Try a title, actor, director, or genre…"><button type="submit">Find films <span aria-hidden="true">↗</span></button></div></form>
+  <div class="section-heading"><h2>Reference dataset</h2><span id="movie-count" class="muted" role="status"></span></div><div id="movies" class="movie-grid" aria-live="polite"><p class="state">Loading the dataset…</p></div><button id="load-more" class="secondary load-more" hidden>Load more films</button>
+</section>
+<section id="connections" aria-labelledby="graph-title"><div class="section-heading"><div><p class="eyebrow">GRAPH INTELLIGENCE</p><h2 id="graph-title">Explore the knowledge graph.</h2></div><button id="refresh-graph" class="secondary">Refresh graph</button></div><p class="muted">Select a film node to inspect its relationships. This view shows a sample of the reference dataset.</p><div class="legend"><span class="film-dot">Film</span><span class="person-dot">Person</span><span class="genre-dot">Genre</span></div><div id="graph" class="graph-panel" aria-live="polite"></div><p id="graph-selection" class="muted" role="status"></p></section>
+<section id="assistant" aria-labelledby="chat-title"><div class="section-heading"><div><p class="eyebrow">CONVERSATIONAL AI & RETRIEVAL</p><h2 id="chat-title">Ask questions. Inspect the evidence.</h2></div><span class="tag">Answers with evidence</span></div><p class="muted">Ask about the reference dataset or explore a theme. Open the retrieved sources to check the answer.</p><div id="chat-log" class="chat-log" role="log" aria-live="polite"><p class="chat-intro">Try “Which films explore memory and identity?”</p></div><form id="chat-form"><label for="question">Your question</label><div class="input-row"><input id="question" maxlength="2000" required placeholder="Ask about the dataset…"><button id="ask-button" type="submit">Ask ↗</button></div></form></section>
+{% if can_view_analytics %}<section id="activity" aria-labelledby="activity-title"><div class="section-heading"><div><p class="eyebrow">DIGITAL ANALYTICS & REPORTING</p><h2 id="activity-title">Measure exploration activity.</h2></div><a id="export" class="button secondary" href="/api/analytics.csv">Export CSV ↓</a></div><form id="analytics-form" class="date-form"><div><label for="start">From</label><input id="start" type="date"></div><div><label for="end">Through</label><input id="end" type="date"></div><button type="submit">Apply dates</button><button type="reset" class="secondary">Clear</button></form><p id="analytics-state" role="status" class="muted"></p><div id="analytics-totals" class="activity-totals"></div><div id="chart" class="chart-panel"></div></section>
+{% endif %}<footer>Connected data. Inspectable evidence.<span>GraphIntel AI / Analytics & Conversational Intelligence</span></footer>
+</main>
+<dialog id="movie-dialog" aria-labelledby="detail-title"><button id="close-dialog" class="close secondary" aria-label="Close movie details">✕</button><div id="movie-detail"></div></dialog>
+</body></html>
