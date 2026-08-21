@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: default-deny-ingress, namespace: cinegraph}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: gateway-to-web, namespace: cinegraph}
+spec:
+  podSelector:
+    matchExpressions:
+      - {key: app, operator: In, values: [dashboard, catalog]}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+      ports:
+        - {protocol: TCP, port: 5000}
+        - {protocol: TCP, port: 8001}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: dashboard-to-api, namespace: cinegraph}
+spec:
+  podSelector:
+    matchLabels: {app: api}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {app: dashboard}}
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: monitoring}}
+      ports: [{protocol: TCP, port: 8000}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: bounded-egress, namespace: cinegraph}
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}
+      ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]
+    - to: [{podSelector: {matchLabels: {app: api}}}]
+      ports: [{protocol: TCP, port: 8000}]
+    # Narrow these destination CIDRs to your managed database networks before deployment.
+    - ports: [{protocol: TCP, port: 5432}, {protocol: TCP, port: 7687}, {protocol: TCP, port: 6379}]
+    # Hosted LLM HTTPS; use a controlled egress proxy if destination allowlisting is required.
+    - ports: [{protocol: TCP, port: 443}]

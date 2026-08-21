@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cinegraph-init
+  namespace: cinegraph
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: initialize
+        image: cinegraph-ai:local
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - scripts/initialize.py
+        envFrom:
+        - configMapRef:
+            name: cinegraph-config
+        - secretRef:
+            name: cinegraph-secrets
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: '1'
+            memory: 768Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 35
+      volumes:
+      - name: tmp
+        emptyDir:
+          sizeLimit: 64Mi

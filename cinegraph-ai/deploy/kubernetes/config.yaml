@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cinegraph-config
+  namespace: cinegraph
+data:
+  DJANGO_DEBUG: 'false'
+  DJANGO_ALLOWED_HOSTS: admin.films.example.org,localhost,127.0.0.1,catalog
+  API_BASE_URL: http://api:8000
+  CATALOG_URL: https://admin.films.example.org/admin/
+  NEO4J_USER: neo4j
+  NEO4J_DATABASE: neo4j
+  LLM_BASE_URL: https://api.openai.com/v1
+  LLM_MODEL: gpt-4.1-mini
+  CINEGRAPH_ENV: production
+  CINEGRAPH_REQUIRE_AUTH: 'true'
+  DJANGO_TRUST_PROXY: 'true'
+  SEED_SAMPLE_DATA: 'false'
+  DASHBOARD_ORIGIN: https://films.example.org
+  CATALOG_ORIGIN: https://admin.films.example.org

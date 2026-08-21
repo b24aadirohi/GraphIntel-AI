@@ -1,0 +1,66 @@
+name: GraphIntel release image
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+concurrency:
+  group: cinegraph-release
+  cancel-in-progress: false
+jobs:
+  checks:
+    uses: ./.github/workflows/cinegraph-ai.yml
+  image:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production-image
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+      - name: Registry image name
+        id: image
+        shell: bash
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}/cinegraph-ai" >> "$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
+        with:
+          context: cinegraph-ai
+          push: false
+          load: true
+          tags: ${{ steps.image.outputs.name }}:${{ github.sha }}
+          platforms: linux/amd64
+          provenance: false
+      - name: Verify runtime libraries
+        env:
+          IMAGE: ${{ steps.image.outputs.name }}:${{ github.sha }}
+        run: docker run --rm "$IMAGE" python -c 'from zoneinfo import ZoneInfo; from sklearn.feature_extraction.text import TfidfVectorizer; assert str(ZoneInfo("UTC")) == "UTC"; assert TfidfVectorizer().fit_transform(["graph database", "movie graph"]).shape == (2, 3)'
+      - name: Scan the exact image to be published
+        uses: aquasecurity/trivy-action@d2a0b60797ff03db6132bd4e2b293f9b37081297
+        with:
+          image-ref: ${{ steps.image.outputs.name }}:${{ github.sha }}
+          scanners: vuln
+          format: table
+          exit-code: '1'
+          severity: CRITICAL,HIGH
+          ignore-unfixed: false
+      - name: Export release software bill of materials
+        uses: aquasecurity/trivy-action@d2a0b60797ff03db6132bd4e2b293f9b37081297
+        with:
+          image-ref: ${{ steps.image.outputs.name }}:${{ github.sha }}
+          format: cyclonedx
+          output: cinegraph-release-sbom.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinegraph-release-sbom
+          path: cinegraph-release-sbom.json
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push scanned image without rebuilding
+        env:
+          IMAGE: ${{ steps.image.outputs.name }}:${{ github.sha }}
+        run: |
+          docker push "$IMAGE"
+          docker image inspect "$IMAGE" --format '{{index .RepoDigests 0}}' >> "$GITHUB_STEP_SUMMARY"

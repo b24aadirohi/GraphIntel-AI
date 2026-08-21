@@ -1,0 +1,37 @@
+{
+    servers {
+        timeouts {
+            read_header 5s
+            read_body 15s
+            idle 60s
+        }
+    }
+}
+{$DASHBOARD_DOMAIN} {
+    encode zstd gzip
+    request_body {
+        max_size 16KB
+    }
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options nosniff
+        -Server
+    }
+    reverse_proxy dashboard:5000 {
+        header_up X-Forwarded-For {remote_host}
+    }
+}
+{$CATALOG_DOMAIN} {
+    encode zstd gzip
+    request_body {
+        max_size 1MB
+    }
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options nosniff
+        -Server
+    }
+    reverse_proxy catalog:8001 {
+        header_up X-Forwarded-For {remote_host}
+    }
+}

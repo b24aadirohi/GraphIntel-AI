@@ -1,0 +1,115 @@
+name: cinegraph-ai
+
+x-app: &app
+  image: cinegraph-ai:local
+  build: .
+  restart: unless-stopped
+  environment: &environment
+    CINEGRAPH_ENV: development
+    CINEGRAPH_REQUIRE_AUTH: ${CINEGRAPH_REQUIRE_AUTH:-true}
+    CINEGRAPH_API_KEY: ${CINEGRAPH_API_KEY:?Run python scripts/configure.py --local first}
+    REDIS_URL: redis://redis:6379/0
+    DATABASE_URL: postgresql://cinegraph:${POSTGRES_PASSWORD:-cinegraph-local-password}@postgres:5432/cinegraph
+    NEO4J_URI: bolt://neo4j:7687
+    NEO4J_USER: neo4j
+    NEO4J_PASSWORD: ${NEO4J_PASSWORD:-cinegraph-local-password}
+    NEO4J_DATABASE: neo4j
+    DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-local-only-cinegraph-change-before-deployment-7f83e4e5c792}
+    DJANGO_DEBUG: "false"
+    DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,catalog
+    API_BASE_URL: http://api:8000
+    CATALOG_URL: http://localhost:${CATALOG_PORT:-8101}/admin/
+    SEED_SAMPLE_DATA: "true"
+    LLM_API_KEY: ${LLM_API_KEY:-}
+    LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
+    LLM_MODEL: ${LLM_MODEL:-gpt-4.1-mini}
+    LLM_AUTH_HEADER: ${LLM_AUTH_HEADER:-Authorization}
+  depends_on:
+    init:
+      condition: service_completed_successfully
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+    restart: unless-stopped
+    ports: ["127.0.0.1:6388:6379"]
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cinegraph
+      POSTGRES_USER: cinegraph
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cinegraph-local-password}
+    ports: ["127.0.0.1:${POSTGRES_PORT:-5544}:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinegraph -d cinegraph"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  neo4j:
+    image: neo4j:5.26-community
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-cinegraph-local-password}
+      NEO4J_server_memory_heap_initial__size: 256m
+      NEO4J_server_memory_heap_max__size: 512m
+      NEO4J_server_memory_pagecache_size: 256m
+    ports: ["127.0.0.1:${NEO4J_BOLT_PORT:-7688}:7687", "127.0.0.1:${NEO4J_HTTP_PORT:-7475}:7474"]
+    volumes: ["neo4j-data:/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+  init:
+    <<: *app
+    restart: "no"
+    command: ["python", "scripts/initialize.py"]
+    depends_on:
+      redis: {condition: service_healthy}
+      postgres: {condition: service_healthy}
+      neo4j: {condition: service_healthy}
+  api:
+    <<: *app
+    command: ["uvicorn", "cinegraph.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports: ["127.0.0.1:${API_PORT:-8100}:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+  catalog:
+    <<: *app
+    command: ["gunicorn", "cinegraph.catalog.wsgi:application", "--bind", "0.0.0.0:8001", "--workers", "2", "--access-logfile", "-"]
+    ports: ["127.0.0.1:${CATALOG_PORT:-8101}:8001"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health/', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+  dashboard:
+    <<: *app
+    command: ["gunicorn", "cinegraph.dashboard.app:create_app()", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "60", "--access-logfile", "-"]
+    ports: ["127.0.0.1:${DASHBOARD_PORT:-5100}:5000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+  worker:
+    <<: *app
+    command: ["python", "manage.py", "sync_graph", "--watch"]
+
+volumes:
+  redis-data:
+  postgres-data:
+  neo4j-data:

@@ -1,0 +1,90 @@
+name: GraphIntel AI
+on:
+  push:
+    paths: ['cinegraph-ai/**', '.github/workflows/cinegraph-ai.yml']
+  pull_request:
+    paths: ['cinegraph-ai/**', '.github/workflows/cinegraph-ai.yml']
+  schedule:
+    - cron: "20 5 * * *"
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cinegraph-ai
+    timeout-minutes: 20
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: ['6388:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s
+          --health-timeout 3s --health-retries 20
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: cinegraph
+          POSTGRES_USER: cinegraph
+          POSTGRES_PASSWORD: cinegraph-ci-only
+        ports: ['5544:5432']
+        options: >-
+          --health-cmd "pg_isready -U cinegraph -d cinegraph"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+      neo4j:
+        image: neo4j:5.26-community
+        env:
+          NEO4J_AUTH: neo4j/cinegraph-ci-only
+          NEO4J_server_memory_heap_max__size: 512m
+          NEO4J_server_memory_pagecache_size: 256m
+        ports: ['7688:7687', '7475:7474']
+        options: >-
+          --health-cmd "wget --spider -q http://localhost:7474"
+          --health-interval 10s --health-timeout 5s --health-retries 30
+    env:
+      DATABASE_URL: postgresql://cinegraph:cinegraph-ci-only@localhost:5544/cinegraph
+      NEO4J_URI: bolt://localhost:7688
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: cinegraph-ci-only
+      DJANGO_SECRET_KEY: ci-only-key-not-used-for-any-running-deployment-539920
+      CINEGRAPH_INTEGRATION: '1'
+      CINEGRAPH_ENV: test
+      CINEGRAPH_REQUIRE_AUTH: 'false'
+      REDIS_URL: redis://localhost:6388/15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff
+        with:
+          version: '0.8.22'
+          enable-cache: true
+      - run: uv sync --frozen --extra dev
+      - run: uv run ruff check .
+      - run: uv run python manage.py check
+      - run: uv run python manage.py makemigrations --check --dry-run
+      - run: uv run pytest -q
+      - run: uv run pip-audit --local --skip-editable
+      - run: uv run cinegraph-evaluate
+      - run: docker build -t cinegraph-ai:ci .
+      - name: Verify runtime timezone and numerical libraries
+        run: docker run --rm cinegraph-ai:ci python -c 'from zoneinfo import ZoneInfo; from sklearn.feature_extraction.text import TfidfVectorizer; assert str(ZoneInfo("UTC")) == "UTC"; assert TfidfVectorizer().fit_transform(["graph database", "movie graph"]).shape == (2, 3)'
+      - name: Scan application image
+        uses: aquasecurity/trivy-action@d2a0b60797ff03db6132bd4e2b293f9b37081297
+        with:
+          image-ref: cinegraph-ai:ci
+          format: table
+          exit-code: '1'
+          severity: CRITICAL,HIGH
+          ignore-unfixed: false
+      - name: Export software bill of materials
+        uses: aquasecurity/trivy-action@d2a0b60797ff03db6132bd4e2b293f9b37081297
+        with:
+          image-ref: cinegraph-ai:ci
+          format: cyclonedx
+          output: cinegraph-sbom.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cinegraph-sbom
+          path: cinegraph-sbom.json

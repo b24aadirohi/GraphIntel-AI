@@ -1,0 +1,142 @@
+# Standalone deployment: docker compose --env-file .env.production -f compose.production.yaml up -d
+name: cinegraph-production
+x-app: &app
+  image: ${CINEGRAPH_IMAGE:?Set immutable application image}
+  restart: unless-stopped
+  env_file: ["${CINEGRAPH_ENV_FILE:-.env.production}"]
+  read_only: true
+  tmpfs: ["/tmp:size=64m,mode=1777"]
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 128
+  mem_limit: 768m
+  cpus: 1.0
+  networks: [backend]
+  stop_grace_period: 35s
+  logging:
+    driver: json-file
+    options: {max-size: "10m", max-file: "3"}
+  depends_on:
+    init: {condition: service_completed_successfully}
+services:
+  gateway:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      DASHBOARD_DOMAIN: ${DASHBOARD_DOMAIN:?Required public DNS name}
+      CATALOG_DOMAIN: ${CATALOG_DOMAIN:?Required admin DNS name}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks: [edge, backend]
+    depends_on:
+      dashboard: {condition: service_healthy}
+      catalog: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cinegraph
+      POSTGRES_USER: cinegraph
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Generate production credentials}
+    volumes: [postgres-data:/var/lib/postgresql/data]
+    networks: [backend]
+    shm_size: 256m
+    mem_limit: 1g
+    cpus: 1.0
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U cinegraph -d cinegraph"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  neo4j:
+    image: neo4j:5.26-community
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:?Generate production credentials}
+      NEO4J_server_memory_heap_initial__size: 256m
+      NEO4J_server_memory_heap_max__size: 512m
+      NEO4J_server_memory_pagecache_size: 256m
+    volumes: [neo4j-data:/data]
+    networks: [backend]
+    mem_limit: 1536m
+    cpus: 1.5
+    healthcheck:
+      test: [CMD-SHELL, "wget --spider -q http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Generate production credentials}
+    command: [sh, -c, 'exec redis-server --requirepass "$$REDIS_PASSWORD" --appendonly yes --maxmemory 128mb --maxmemory-policy noeviction']
+    volumes: [redis-data:/data]
+    networks: [backend]
+    mem_limit: 192m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli ping | grep -q PONG']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  init:
+    <<: *app
+    restart: "no"
+    command: [python, scripts/initialize.py]
+    depends_on:
+      postgres: {condition: service_healthy}
+      neo4j: {condition: service_healthy}
+      redis: {condition: service_healthy}
+  api:
+    <<: *app
+    # One process per replica preserves metrics accounting; scale replicas at the orchestrator.
+    command: [uvicorn, "cinegraph.api.app:app", --host, "0.0.0.0", --port, "8000", --no-access-log, --limit-concurrency, "64", --timeout-keep-alive, "5"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+  dashboard:
+    <<: *app
+    command: [gunicorn, "cinegraph.dashboard.app:create_app()", --bind, "0.0.0.0:5000", --workers, "2", --threads, "4", --timeout, "50", --graceful-timeout, "30", --worker-tmp-dir, /tmp]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/ready', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+  catalog:
+    <<: *app
+    command: [gunicorn, "cinegraph.catalog.wsgi:application", --bind, "0.0.0.0:8001", --workers, "2", --threads, "2", --timeout, "30", --graceful-timeout, "30", --worker-tmp-dir, /tmp]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/ready/', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+  worker:
+    <<: *app
+    command: [python, manage.py, sync_graph, --watch]
+    healthcheck:
+      test: [CMD, python, manage.py, worker_health]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+volumes:
+  postgres-data:
+  neo4j-data:
+  redis-data:
+  caddy-data:
+  caddy-config:
+networks:
+  edge:
+  backend:
+    # Private by lack of published ports; egress needed for hosted LLM providers.
