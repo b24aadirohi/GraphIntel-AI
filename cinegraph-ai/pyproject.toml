@@ -12,7 +12,7 @@ dependencies = [
   "uvicorn>=0.34,<1", "gunicorn>=23,<24", "whitenoise>=6.9,<7",
   "neo4j>=5.28,<7", "psycopg[binary]>=3.2,<4", "dj-database-url>=2.3,<4",
   "httpx>=0.28,<1", "requests>=2.32,<3", "scikit-learn>=1.6,<2",
-  "mcp>=1.20,<2", "python-dotenv>=1,<2", "redis>=5.2,<7",
+  "mcp>=1.20,<3", "python-dotenv>=1,<2", "redis>=5.2,<7",
   "prometheus-client>=0.21,<1",
 ]
 
