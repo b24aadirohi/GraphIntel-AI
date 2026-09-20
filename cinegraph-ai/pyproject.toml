@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "Data analytics, Neo4j graph intelligence, NLP and conversational RAG across Python, Django, Flask and FastAPI"
 requires-python = ">=3.12,<3.14"
 dependencies = [
-  "django>=5.2,<5.3", "flask>=3.1,<4", "fastapi>=0.115,<1",
+  "django>=5.2,<6.2", "flask>=3.1,<4", "fastapi>=0.115,<1",
   "uvicorn>=0.34,<1", "gunicorn>=23,<24", "whitenoise>=6.9,<7",
   "neo4j>=5.28,<7", "psycopg[binary]>=3.2,<4", "dj-database-url>=2.3,<4",
   "httpx>=0.28,<1", "requests>=2.32,<3", "scikit-learn>=1.6,<2",
